@@ -33,7 +33,7 @@ namespace bfjit::jit {
           std::move(smc.mod_impl),
           std::move(smc.ctx_impl))));
 
-    auto main_fn = llvm::cantFail(jit->lookup("main"));
+    auto main_fn = llvm::cantFail(jit->lookup("jit_main"));
     auto main_ptr = main_fn.toPtr<int32_t(*)()>();
 
     // for debugging: settings set plugin.jit-loader.gdb.enable on

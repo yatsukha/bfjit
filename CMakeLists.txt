@@ -18,6 +18,7 @@ add_executable(bfjit
   src/bfjit/nodes/nodes.cpp
   src/bfjit/codegen/single_module_context.cpp
   src/bfjit/codegen/codegen.cpp
+  src/bfjit/checks/verification.cpp
   src/bfjit/optimizer/optimizer.cpp
   src/bfjit/jit/jit.cpp
   src/bfjit/util/cmdline.cpp)

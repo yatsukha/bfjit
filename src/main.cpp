@@ -1,4 +1,5 @@
-#include "bfjit/util/terminate.hpp"
+#include "bfjit/checks/verification.hpp"
+#include <bfjit/util/terminate.hpp>
 #include <bfjit/util/cmdline.hpp>
 #include <bfjit/io/file_chunk_iter.hpp>
 #include <bfjit/io/flat_iter.hpp>
@@ -30,7 +31,10 @@ auto main(int argc, char** argv) -> int {
     bfjit::io::flat_iter{
       std::move(*opt_file_iter),
       bfjit::io::file_chunk_iter::sentinel()};
-  auto parsed = bfjit::parser::parse(std::move(flat_file_iter));
+  auto parsed = 
+    bfjit::parser::parse(
+      std::move(flat_file_iter),
+      {.file = args.input_file});
 
   if (args.verbose) {
     fmt::println("Minified file:");
@@ -40,18 +44,22 @@ auto main(int argc, char** argv) -> int {
     fmt::println("\n");
   }
 
-  auto llvm_ir = bfjit::codegen::gen_ir(parsed);
+  auto llvm_ir = bfjit::codegen::gen_ir(
+    parsed, {.file = is_stdin ? "STDIN" : args.input_file});
   
   if (args.verbose) {
     fmt::println("Before optimizing:\n");
+    std::fflush(stdout);
     llvm_ir.output();
   }
 
+  bfjit::checks::check_module(llvm_ir);
   bfjit::optimizer::pass(llvm_ir);
-  
+
   if (args.verbose || args.noexec) {
     if (args.verbose) {
       fmt::println("\nAfter optimizing:\n");
+      std::fflush(stdout);
     }
     llvm_ir.output();
   }

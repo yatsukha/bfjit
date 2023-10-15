@@ -10,7 +10,6 @@ BFJIT_WARNINGS_POP
 namespace bfjit::nodes {
 
   auto create_mem_check(codegen::instruction_generation_context& igc) -> void {
-
     auto static abort_fn = [&] {
       auto static abort_fn_type = llvm::FunctionType::get(
         llvm::Type::getVoidTy(igc.smc.ctx), {});

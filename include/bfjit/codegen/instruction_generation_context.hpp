@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bfjit/codegen/single_module_context.hpp>
+#include <bfjit/nodes/location.hpp>
 #include <bfjit/util/macros.hpp>
 
 BFJIT_WARNINGS_PUSH
@@ -8,6 +9,9 @@ BFJIT_WARNINGS_PUSH
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Constant.h>
+#include <llvm/IR/DebugInfoMetadata.h>
+#include <llvm/IR/DebugLoc.h>
+#include <llvm/IR/DIBuilder.h>
 BFJIT_WARNINGS_POP
 
 namespace bfjit::codegen {
@@ -24,10 +28,28 @@ namespace bfjit::codegen {
     std::array<llvm::Value*, 3> memory;
   };
 
+  struct debug_context {
+    std::unique_ptr<llvm::DIBuilder> builder;
+    llvm::DICompileUnit* unit;
+    llvm::DIFile* file;
+    // set at a later date when main is generated
+    // not really satisfied with this design, but that is what happens
+    // when you pack these things together into a single context struct
+    llvm::DISubprogram* main_fn = nullptr;
+
+    auto get(nodes::location const& loc) -> llvm::DILocation* {
+      return llvm::DILocation::get(
+        unit->getContext(),
+        loc.row, loc.col, 
+        main_fn);
+    }
+  };
+
   struct instruction_generation_context {
     single_module_context& smc;
     working_memory mem;
     llvm::IRBuilder<>& builder;
+    debug_context dbg;
 
     //
     // utility variables (and variables that are types)

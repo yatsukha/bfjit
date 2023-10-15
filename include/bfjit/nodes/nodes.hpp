@@ -1,5 +1,7 @@
 #pragma once
 
+#include <bfjit/nodes/location.hpp>
+
 #include <ostream>
 #include <string>
 #include <variant>
@@ -13,9 +15,11 @@ namespace bfjit::codegen {
 
 namespace bfjit::nodes {
 
+  struct token_base {
+    location loc;
+  };
 
-
-  struct fwd {
+  struct fwd : token_base {
     friend auto str(fwd const&) noexcept -> std::string {
       return ">";
     }
@@ -24,7 +28,7 @@ namespace bfjit::nodes {
       fwd const&, codegen::instruction_generation_context&) -> void;
   };
 
-  struct bwd {
+  struct bwd : token_base {
     friend auto str(bwd const&) noexcept -> std::string {
       return "<";
     }
@@ -33,7 +37,7 @@ namespace bfjit::nodes {
       bwd const&, codegen::instruction_generation_context&) -> void;
   };
 
-  struct inc {
+  struct inc : token_base {
     friend auto str(inc const&) noexcept -> std::string {
       return "+";
     }
@@ -42,7 +46,7 @@ namespace bfjit::nodes {
       inc const&, codegen::instruction_generation_context&) -> void;
   };
 
-  struct dec {
+  struct dec : token_base {
     friend auto str(dec const&) noexcept -> std::string {
       return "-";
     }
@@ -51,7 +55,7 @@ namespace bfjit::nodes {
       dec const&, codegen::instruction_generation_context&) -> void;
   };
 
-  struct out {
+  struct out : token_base {
     friend auto str(out const&) noexcept -> std::string {
       return ".";
     }
@@ -60,7 +64,7 @@ namespace bfjit::nodes {
       out const&, codegen::instruction_generation_context&) -> void;
   };
 
-  struct inp {
+  struct inp : token_base {
     friend auto str(inp const&) noexcept -> std::string {
       return ",";
     }
@@ -69,7 +73,7 @@ namespace bfjit::nodes {
       inp const&, codegen::instruction_generation_context&) -> void;
   };
 
-  struct rep {
+  struct rep : token_base {
     using variant_instruction = std::variant<
       fwd, bwd,
       inc, dec,
@@ -79,6 +83,7 @@ namespace bfjit::nodes {
 
     using instruction_block = std::vector<variant_instruction>;
 
+    location end_location;
     instruction_block instructions;
 
     friend auto str(rep const& self) noexcept -> std::string {
