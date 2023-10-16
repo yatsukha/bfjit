@@ -1,10 +1,10 @@
-#include "bfjit/checks/verification.hpp"
 #include <bfjit/util/terminate.hpp>
 #include <bfjit/util/cmdline.hpp>
 #include <bfjit/io/file_chunk_iter.hpp>
 #include <bfjit/io/flat_iter.hpp>
 #include <bfjit/parser/parser.hpp>
 #include <bfjit/codegen/codegen.hpp>
+#include <bfjit/checks/verification.hpp>
 #include <bfjit/optimizer/optimizer.hpp>
 #include <bfjit/jit/jit.hpp>
 
