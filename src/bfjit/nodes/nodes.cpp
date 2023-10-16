@@ -216,7 +216,10 @@ namespace bfjit::nodes {
     igc.builder.SetInsertPoint(loop_block);
     for (auto const& instruction : self.instructions) {
       std::visit(
-        [&igc](auto&& instr) { translate(instr, igc); },
+        [&igc](auto&& instr) {
+          igc.builder.SetCurrentDebugLocation(igc.dbg.get(instr.loc));
+          translate(instr, igc);
+        },
         instruction);
     }
     
