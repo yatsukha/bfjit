@@ -11,7 +11,12 @@ set(CMAKE_CXX_FLAGS_DEBUG
 set(CMAKE_CXX_FLAGS_RELEASE 
   "${CMAKE_CXX_FLAGS_RELEASE} -g -march=native")
 
-add_link_options("--ld-path=/usr/local/bin/ld64.sold")
+
+# -DCUSTOM_CXX_LINKER="--ld-path=/usr/local/bin/ld64.sold"
+# otherwise it uses the compiler to deduce it
+if(DEFINED CUSTOM_CXX_LINKER)
+  add_link_options(${CUSTOM_CXX_LINKER})
+endif()
 
 add_executable(bfjit 
   src/main.cpp
@@ -25,8 +30,8 @@ add_executable(bfjit
 
 find_package(Threads REQUIRED)
 find_package(fmt REQUIRED)
-# not the most portable approach I admit
-find_package(LLVM REQUIRED PATHS "/opt/homebrew/opt/llvm")
+# -DLLVM_DIR=/opt/homebrew/opt/llvm/lib/cmake/llvm
+find_package(LLVM REQUIRED)
 
 llvm_map_components_to_libnames(llvm_libs 
   core
