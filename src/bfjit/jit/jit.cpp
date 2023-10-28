@@ -23,6 +23,14 @@ namespace bfjit::jit {
 
     auto jit = llvm::cantFail(llvm::orc::LLJITBuilder().create());
 
+    // this one will make sure that symbols in the current process are
+    // available to the JIT code
+    // essentially to make sure that libc is available, e.g. getchar and putchar
+    jit->getMainJITDylib().addGenerator(
+      llvm::cantFail(
+        llvm::orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(
+          jit->getDataLayout().getGlobalPrefix())));
+
     // fmt::println(
     //   "architecture: {}",
     //   jit->getTargetTriple().getArchName().str());
@@ -33,7 +41,7 @@ namespace bfjit::jit {
           std::move(smc.mod_impl),
           std::move(smc.ctx_impl))));
 
-    auto main_fn = llvm::cantFail(jit->lookup("jit_main"));
+    auto main_fn = llvm::cantFail(jit->lookup("main"));
     auto main_ptr = main_fn.toPtr<int32_t(*)()>();
 
     // for debugging: settings set plugin.jit-loader.gdb.enable on

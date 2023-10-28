@@ -117,7 +117,7 @@ namespace bfjit::codegen {
         main_type,
         // external linkage per convention
         llvm::Function::ExternalLinkage,
-        "jit_main",
+        "main",
         &global_module.mod
       );
 

@@ -42,11 +42,12 @@ namespace bfjit::io {
       }
 
       {
-        int const enable = 1;
-        // signal sequential reading on macos
-        // on linux this would be posix_fadvise but cba
-        // to make this multiplatform
-        ::fcntl(file, F_RDAHEAD, &enable);
+        #ifdef __APPLE__
+          int const enable = 1;
+          ::fcntl(file, F_RDAHEAD, &enable);
+        #elif __linux__
+          ::posix_fadvise(file, 0, 0, POSIX_FADV_SEQUENTIAL);
+        #endif
       }
 
       // initialize the iter

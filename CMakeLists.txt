@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(bfjit)
 
-set(CMAKE_CXX_STANDARD 23)
+# C++23 triggers a bug in llvm16, fixed in llvm17
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -33,15 +34,20 @@ find_package(fmt REQUIRED)
 # -DLLVM_DIR=/opt/homebrew/opt/llvm/lib/cmake/llvm
 find_package(LLVM REQUIRED)
 
-llvm_map_components_to_libnames(llvm_libs 
-  core
-  analysis
-  scalaropts
-  instcombine
-  transformutils
-  passes
-  orcjit
-  native)
+set(llvm_libs LLVM)
+
+if(APPLE)
+  llvm_map_components_to_libnames(llvm_libs 
+    core
+    analysis
+    scalaropts
+    instcombine
+    transformutils
+    passes
+    orcjit
+    native)
+endif()
+
 message(STATUS "LLVM found at: ${LLVM_DIR}")
 message(STATUS "LLVM lib list: ${llvm_libs}")
 
